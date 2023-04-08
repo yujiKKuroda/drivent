@@ -5,6 +5,14 @@ import addressRepository, { CreateAddressParams } from '@/repositories/address-r
 import enrollmentRepository, { CreateEnrollmentParams } from '@/repositories/enrollment-repository';
 import { exclude } from '@/utils/prisma-utils';
 
+type CepAddress = {
+  logradouro: string;
+  complemento: string;
+  bairro: string;
+  cidade: string;
+  uf: string;
+};
+
 async function getAddressFromCEP(cep: string) {
   const result = await request.get(`${process.env.VIA_CEP_API}/${cep}/json/`);
 
@@ -12,7 +20,15 @@ async function getAddressFromCEP(cep: string) {
     throw notFoundError();
   }
 
-  return result.data;
+  const address: CepAddress = {
+    logradouro: result.data.logradouro,
+    complemento: result.data.complemento,
+    bairro: result.data.bairro,
+    cidade: result.data.localidade,
+    uf: result.data.uf,
+  };
+
+  return address;
 }
 
 async function getOneWithAddressByUserId(userId: number): Promise<GetOneWithAddressByUserIdResult> {
