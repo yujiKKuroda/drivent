@@ -34,12 +34,12 @@ export async function getAddressFromCEP(req: AuthenticatedRequest, res: Response
     const address = await enrollmentsService.getAddressFromCEP(cep);
     return res.status(httpStatus.OK).send(address);
   } catch (error) {
-    if (error.name === 'NotFoundError') {
+    if (error.name === 'NotFoundError' || error.name === 'InexistentAddressError') {
       return res.sendStatus(httpStatus.NO_CONTENT);
     } else if (error.name === 'InvalidDataError') {
       return res.status(httpStatus.NO_CONTENT).send(`${error.message}: ${error.details}`);
-    } else if (error.name === 'InexistentAddressError') {
-      return res.sendStatus(httpStatus.NOT_FOUND);
+    } else {
+      return res.sendStatus(httpStatus.BAD_REQUEST);
     }
   }
 }
