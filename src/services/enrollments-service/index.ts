@@ -16,8 +16,11 @@ type CepAddress = {
 async function getAddressFromCEP(cep: string) {
   const result = await request.get(`${process.env.VIA_CEP_API}/${cep}/json/`);
 
-  if (!result.data) {
-    throw notFoundError();
+  console.log(result.status);
+  console.log(result.data);
+
+  if (result.status === 400) {
+    throw invalidDataError(['invalid CEP']);
   }
 
   const address: CepAddress = {
