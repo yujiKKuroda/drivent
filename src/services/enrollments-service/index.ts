@@ -4,14 +4,7 @@ import { inexistentAddressError, invalidDataError, notFoundError } from '@/error
 import addressRepository, { CreateAddressParams } from '@/repositories/address-repository';
 import enrollmentRepository, { CreateEnrollmentParams } from '@/repositories/enrollment-repository';
 import { exclude } from '@/utils/prisma-utils';
-
-type CepAddress = {
-  logradouro: string;
-  complemento: string;
-  bairro: string;
-  cidade: string;
-  uf: string;
-};
+import { ViaCEPAddress } from '@/protocols';
 
 async function getAddressFromCEP(cep: string) {
   const result = await request.get(`${process.env.VIA_CEP_API}/${cep}/json/`);
@@ -24,11 +17,11 @@ async function getAddressFromCEP(cep: string) {
     throw inexistentAddressError();
   }
 
-  const address: CepAddress = {
+  const address: ViaCEPAddress = {
     logradouro: result.data.logradouro,
     complemento: result.data.complemento,
     bairro: result.data.bairro,
-    cidade: result.data.localidade,
+    localidade: result.data.localidade,
     uf: result.data.uf,
   };
 
