@@ -29,17 +29,14 @@ export async function postCreateOrUpdateEnrollment(req: AuthenticatedRequest, re
 }
 
 export async function getAddressFromCEP(req: AuthenticatedRequest, res: Response) {
-  const cep: string = req.query.cep as string;
+  const { cep } = req.query as Record<string, string>;
+
   try {
     const address = await enrollmentsService.getAddressFromCEP(cep);
-    return res.status(httpStatus.OK).send(address);
+    res.status(httpStatus.OK).send(address);
   } catch (error) {
-    if (error.name === 'NotFoundError' || error.name === 'InexistentAddressError') {
-      return res.sendStatus(httpStatus.NO_CONTENT);
-    } else if (error.name === 'InvalidDataError') {
-      return res.status(httpStatus.NO_CONTENT).send(`${error.message}: ${error.details}`);
-    } else {
-      return res.sendStatus(httpStatus.BAD_REQUEST);
+    if (error.name === 'NotFoundError') {
+      return res.send(httpStatus.NO_CONTENT);
     }
   }
 }
