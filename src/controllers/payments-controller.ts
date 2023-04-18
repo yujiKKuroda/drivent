@@ -24,10 +24,11 @@ export async function getPaymentInfoFromTicket(req: AuthenticatedRequest, res: R
 
 export async function payTicket(req: AuthenticatedRequest, res: Response) {
   const { userId } = req;
+  console.log(req.body);
 
   try {
     const response = await paymentsService.payUserTicket(req.body, userId);
-    return res.status(httpStatus.CREATED).send(response);
+    return res.status(httpStatus.OK).send(response);
   } catch (error) {
     if (error.name === 'noInputError') {
       return res.sendStatus(httpStatus.BAD_REQUEST);
