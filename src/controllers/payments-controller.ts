@@ -4,22 +4,25 @@ import { AuthenticatedRequest } from '@/middlewares';
 import paymentsService from '@/services/payments-service';
 
 export async function getPaymentInfoFromTicket(req: AuthenticatedRequest, res: Response) {
+  const { userId } = req;
+  const ticketId: number = parseInt(req.query.ticketId as string);
+
   try {
-    const ticketTypeList = await paymentsService.getAllTicketType();
-    return res.status(httpStatus.OK).send(ticketTypeList);
+    const paymentList = await paymentsService.getPaymentByTicketId(ticketId, userId);
+
+    return res.status(httpStatus.OK).send(paymentList);
   } catch (error) {
-    return res.sendStatus(httpStatus.NO_CONTENT);
+    if (error.name === 'noInputError') {
+      return res.sendStatus(httpStatus.BAD_REQUEST);
+    } else if (error.name === 'NotFoundError') {
+      return res.sendStatus(httpStatus.NOT_FOUND);
+    } else {
+      return res.sendStatus(httpStatus.UNAUTHORIZED);
+    }
   }
 }
 
 export async function payTicket(req: AuthenticatedRequest, res: Response) {
   try {
-    const response = await paymentsService.createTicketForUser(req.body.ticketTypeId, req.userId);
-    return res.status(httpStatus.CREATED).send(response);
-  } catch (error) {
-    if (error.name === 'noInputError') {
-      return res.sendStatus(httpStatus.BAD_REQUEST);
-    }
-    return res.sendStatus(httpStatus.NOT_FOUND);
-  }
+  } catch (error) {}
 }
