@@ -8,6 +8,14 @@ async function findEnrollmentById(id: number) {
   });
 }
 
+async function findEnrollmentByUserId(userId: number) {
+  return await prisma.enrollment.findFirst({
+    where: {
+      userId: userId,
+    },
+  });
+}
+
 async function findTicketById(id: number) {
   return await prisma.ticket.findUnique({
     where: {
@@ -26,6 +34,7 @@ async function getPaymentInfo(ticketId: number) {
 
 const paymentRepository = {
   findEnrollmentById,
+  findEnrollmentByUserId,
   findTicketById,
   getPaymentInfo,
 };

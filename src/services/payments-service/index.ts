@@ -15,8 +15,30 @@ async function getPaymentByTicketId(ticketId: number, userId: number) {
   return result;
 }
 
+async function payUserTicket(body: PaymentBody, userId: number) {
+  if (!body || !body.cardData) throw noInputError();
+
+  const ticket = await paymentRepository.findTicketById(body.ticketId);
+  if (!ticket) throw notFoundError();
+
+  const enrollment = await paymentRepository.findEnrollmentByUserId(userId);
+  if (!enrollment.userId) throw unauthorizedError();
+}
+
+export type PaymentBody = {
+  ticketId: number;
+  cardData: {
+    issuer: string;
+    number: number;
+    name: string;
+    expirationDate: Date;
+    cvv: number;
+  };
+};
+
 const paymentsService = {
   getPaymentByTicketId,
+  payUserTicket,
 };
 
 export default paymentsService;
