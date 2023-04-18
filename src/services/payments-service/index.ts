@@ -25,8 +25,8 @@ async function payUserTicket(body: PaymentBody, userId: number) {
   const ticket: Ticket = await paymentRepository.findTicketById(ticketId);
   if (!ticket) throw notFoundError();
 
-  const enrollment: Enrollment = await paymentRepository.findEnrollmentByUserId(userId);
-  if (!enrollment.userId) throw unauthorizedError();
+  const enrollment: Enrollment = await paymentRepository.findEnrollmentById(ticket.enrollmentId);
+  if (enrollment.userId !== userId) throw unauthorizedError();
 
   const payInfo: Payment = await paymentRepository.postPayment(ticketId, card);
 
