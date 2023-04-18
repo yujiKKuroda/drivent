@@ -15,12 +15,24 @@ export async function getTicketTypes(req: AuthenticatedRequest, res: Response) {
 export async function getTicketsByUser(req: AuthenticatedRequest, res: Response) {
   try {
     const ticketList = await ticketsService.getTicketByUser(req.userId);
-    console.log('Parei aqui!');
     return res.status(httpStatus.OK).send(ticketList);
-  } catch (error) {}
+  } catch (error) {
+    if (error.name === 'NotFoundError') {
+      return res.sendStatus(httpStatus.NOT_FOUND);
+    }
+  }
 }
 
 export async function createTicket(req: AuthenticatedRequest, res: Response) {
   try {
-  } catch (error) {}
+    const response = await ticketsService.createTicketForUser(req.body.ticketTypeId, req.userId);
+    return res.status(httpStatus.CREATED).send(response);
+  } catch (error) {
+    if (error.name === 'noInputError') {
+      return res.sendStatus(httpStatus.BAD_REQUEST);
+    }
+    if (error.name === 'notFoundError') {
+      return res.sendStatus(httpStatus.NOT_FOUND);
+    }
+  }
 }
