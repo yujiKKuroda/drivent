@@ -3,12 +3,12 @@ import { authenticateToken, validateBody } from '@/middlewares';
 import { getTicketTypes, getTicketsByUser, createTicket } from '@/controllers';
 import { createTicketSchema } from '@/schemas';
 
-const ticketsRouter = Router();
+const paymentsRouter = Router();
 
-ticketsRouter
+paymentsRouter
   .all('/*', authenticateToken)
   .get('/types', getTicketTypes)
   .get('/', getTicketsByUser)
   .post('/', validateBody(createTicketSchema), createTicket);
 
-export { ticketsRouter };
+export { paymentsRouter };
