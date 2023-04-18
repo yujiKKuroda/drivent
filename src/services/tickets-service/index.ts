@@ -35,7 +35,7 @@ async function createTicketForUser(ticketTypeId: number, userId: number) {
     id: createdTicket.id,
     status: createdTicket.status,
     ticketTypeId: ticketTypeId,
-    enrollmentId: userId,
+    enrollmentId: enrollment.id,
     TicketType: {
       id: ticketTypeId,
       name: ticketType.name,

@@ -31,8 +31,6 @@ export async function createTicket(req: AuthenticatedRequest, res: Response) {
     if (error.name === 'noInputError') {
       return res.sendStatus(httpStatus.BAD_REQUEST);
     }
-    if (error.name === 'notFoundError') {
-      return res.sendStatus(httpStatus.NOT_FOUND);
-    }
+    return res.sendStatus(httpStatus.NOT_FOUND);
   }
 }
