@@ -1,60 +1,45 @@
-import { Enrollment, Payment, Ticket } from '@prisma/client';
-import { noInputError, notFoundError, unauthorizedError } from '@/errors';
-import paymentRepository from '@/repositories/payment-repository';
+import { notFoundError, unauthorizedError } from '@/errors';
+import { CardPaymentParams, PaymentParams } from '@/protocols';
+import enrollmentRepository from '@/repositories/enrollment-repository';
+import paymentsRepository from '@/repositories/payments-repository';
+import ticketsRepository from '@/repositories/tickets-repository';
 
-async function getPaymentByTicketId(ticketId: number, userId: number) {
-  if (!ticketId) throw noInputError();
-
-  const ticket = await paymentRepository.findTicketById(ticketId);
+async function verifyTicketAndEnrollment(ticketId: number, userId: number) {
+  const ticket = await ticketsRepository.findTickeyById(ticketId);
   if (!ticket) throw notFoundError();
 
-  const enrollment = await paymentRepository.findEnrollmentById(ticket.enrollmentId);
+  const enrollment = await enrollmentRepository.findById(ticket.enrollmentId);
+  if (!enrollment) throw notFoundError();
+
   if (enrollment.userId !== userId) throw unauthorizedError();
-
-  const result = await paymentRepository.getPaymentInfo(ticketId);
-
-  return result;
 }
 
-async function payUserTicket(body: PaymentBody, userId: number) {
-  const ticketId: number = body.ticketId;
-  const card: cardData = body.cardData;
+async function getPaymentByTicketId(userId: number, ticketId: number) {
+  await verifyTicketAndEnrollment(ticketId, userId);
 
-  if (!ticketId || !card) throw noInputError();
+  const payment = await paymentsRepository.findPaymentByTicketId(ticketId);
+  if (!payment) throw notFoundError();
 
-  const ticket: Ticket = await paymentRepository.findTicketById(ticketId);
-  if (!ticket) throw notFoundError();
-
-  const enrollment: Enrollment = await paymentRepository.findEnrollmentById(ticket.enrollmentId);
-  if (enrollment.userId !== userId) throw unauthorizedError();
-
-  const payInfo: Payment = await paymentRepository.postPayment(ticketId, card);
-
-  return payInfo;
+  return payment;
 }
 
-export type cardData = {
-  issuer: string;
-  number: number;
-  name: string;
-  expirationDate: Date;
-  cvv: number;
-};
+async function paymentProcess(ticketId: number, userId: number, cardData: CardPaymentParams) {
+  await verifyTicketAndEnrollment(ticketId, userId);
 
-export type PaymentBody = {
-  ticketId: number;
-  cardData: {
-    issuer: string;
-    number: number;
-    name: string;
-    expirationDate: Date;
-    cvv: number;
+  const ticket = await ticketsRepository.findTickeWithTypeById(ticketId);
+
+  const paymentData: PaymentParams = {
+    ticketId,
+    value: ticket.TicketType.price,
+    cardIssuer: cardData.issuer,
+    cardLastDigits: cardData.number.toString().slice(-4),
   };
-};
 
-const paymentsService = {
-  getPaymentByTicketId,
-  payUserTicket,
-};
+  const payment = await paymentsRepository.createPayment(ticketId, paymentData);
 
-export default paymentsService;
+  await ticketsRepository.ticketProcessPayment(ticketId);
+
+  return payment;
+}
+
+export default { getPaymentByTicketId, paymentProcess };
