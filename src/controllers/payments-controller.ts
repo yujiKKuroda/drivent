@@ -24,7 +24,6 @@ export async function getPaymentInfoFromTicket(req: AuthenticatedRequest, res: R
 
 export async function payTicket(req: AuthenticatedRequest, res: Response) {
   const { userId } = req;
-  console.log(req.body);
 
   try {
     const response = await paymentsService.payUserTicket(req.body, userId);
