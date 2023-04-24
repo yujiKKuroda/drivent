@@ -1,12 +1,8 @@
-import { Url } from 'url';
-import { Booking, Enrollment, Hotel, Ticket, TicketType } from '@prisma/client';
+import { Enrollment, Hotel, Ticket, TicketType } from '@prisma/client';
 import { notFoundError, paymentRequiredError } from '@/errors';
 import hotelRepository from '@/repositories/hotel-repository';
 
 async function getHotels(userId: number) {
-  const booking: Booking = await hotelRepository.findBooking(userId);
-  if (!booking) throw notFoundError();
-
   const enrollment: Enrollment = await hotelRepository.findEnrollmentByUserId(userId);
   if (!enrollment) throw notFoundError();
 
@@ -24,9 +20,6 @@ async function getHotels(userId: number) {
 }
 
 async function getHotelRooms(userId: number, hotelId: number) {
-  const booking: Booking = await hotelRepository.findBooking(userId);
-  if (!booking) throw notFoundError();
-
   const enrollment: Enrollment = await hotelRepository.findEnrollmentByUserId(userId);
   if (!enrollment) throw notFoundError();
 

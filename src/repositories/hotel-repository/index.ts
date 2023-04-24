@@ -1,4 +1,4 @@
-import { Booking, Enrollment, Hotel, Ticket, TicketType } from '@prisma/client';
+import { Enrollment, Hotel, Ticket, TicketType } from '@prisma/client';
 import { prisma } from '@/config';
 
 async function findAllHotelRooms(hotelId: number): Promise<HotelWithRooms> {
@@ -37,14 +37,6 @@ async function findAllHotelRooms(hotelId: number): Promise<HotelWithRooms> {
 
 async function findAllHotels(): Promise<Hotel[]> {
   return await prisma.hotel.findMany();
-}
-
-async function findBooking(userId: number): Promise<Booking> {
-  return await prisma.booking.findFirst({
-    where: {
-      userId: userId,
-    },
-  });
 }
 
 async function findEnrollmentByUserId(userId: number): Promise<Enrollment> {
@@ -100,7 +92,6 @@ export type RoomList = {
 const hotelRepository = {
   findAllHotelRooms,
   findAllHotels,
-  findBooking,
   findEnrollmentByUserId,
   findHotelById,
   findTicketByEnrollment,
