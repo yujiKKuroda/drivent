@@ -1,7 +1,7 @@
-import { Booking, Enrollment, Ticket, TicketType } from '@prisma/client';
+import { Booking, Enrollment, Hotel, Ticket, TicketType } from '@prisma/client';
 import { prisma } from '@/config';
 
-async function findAllHotels() {
+async function findAllHotels(): Promise<Hotel[]> {
   return await prisma.hotel.findMany();
 }
 
@@ -17,6 +17,14 @@ async function findEnrollmentByUserId(userId: number): Promise<Enrollment> {
   return await prisma.enrollment.findFirst({
     where: {
       userId: userId,
+    },
+  });
+}
+
+async function findHotelById(hotelId: number): Promise<Hotel> {
+  return await prisma.hotel.findUnique({
+    where: {
+      id: hotelId,
     },
   });
 }
@@ -41,6 +49,7 @@ const hotelRepository = {
   findAllHotels,
   findBooking,
   findEnrollmentByUserId,
+  findHotelById,
   findTicketByEnrollment,
   findTicketTypeByTicket,
 };
