@@ -6,7 +6,6 @@ import supertest from 'supertest';
 import {
   createEnrollmentWithAddress,
   createUser,
-  createTicketType,
   createSpecificTicketType,
   createTicket,
   createHotel,
@@ -95,7 +94,7 @@ describe('GET /hotels', () => {
       const token = await generateValidToken(user);
 
       const enrollment = await createEnrollmentWithAddress(user);
-      const ticketType = await createTicketType();
+      const ticketType = await createSpecificTicketType(false, true);
       await createTicket(enrollment.id, ticketType.id, TicketStatus.RESERVED);
 
       await createHotel();
@@ -190,9 +189,9 @@ describe('GET /hotels/:hotelId', () => {
       await createEnrollmentWithAddress(user);
 
       const hotel = await createHotel();
-      const room = await createRoom(hotel.id);
+      await createRoom(hotel.id);
 
-      const response = await server.get(`/hotels/${room.id}`).set('Authorization', `Bearer ${token}`);
+      const response = await server.get(`/hotels/${hotel.id}`).set('Authorization', `Bearer ${token}`);
 
       expect(response.status).toBe(httpStatus.NOT_FOUND);
     });
@@ -216,9 +215,9 @@ describe('GET /hotels/:hotelId', () => {
       const token = await generateValidToken(user);
 
       const hotel = await createHotel();
-      const room = await createRoom(hotel.id);
+      await createRoom(hotel.id);
 
-      const response = await server.get(`/hotels/${room.id}`).set('Authorization', `Bearer ${token}`);
+      const response = await server.get(`/hotels/${hotel.id}`).set('Authorization', `Bearer ${token}`);
 
       expect(response.status).toBe(httpStatus.NOT_FOUND);
     });
@@ -228,13 +227,12 @@ describe('GET /hotels/:hotelId', () => {
       const token = await generateValidToken(user);
 
       const enrollment = await createEnrollmentWithAddress(user);
-      const ticketType = await createTicketType();
+      const ticketType = await createSpecificTicketType(false, true);
       await createTicket(enrollment.id, ticketType.id, TicketStatus.RESERVED);
       const hotel = await createHotel();
-      const room = await createRoom(hotel.id);
+      await createRoom(hotel.id);
 
-      const response = await server.get(`/hotels/${room.id}`).set('Authorization', `Bearer ${token}`);
-
+      const response = await server.get(`/hotels/${hotel.id}`).set('Authorization', `Bearer ${token}`);
       expect(response.status).toBe(httpStatus.PAYMENT_REQUIRED);
     });
 
@@ -246,9 +244,9 @@ describe('GET /hotels/:hotelId', () => {
       const ticketType = await createSpecificTicketType(true, true);
       await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
       const hotel = await createHotel();
-      const room = await createRoom(hotel.id);
+      await createRoom(hotel.id);
 
-      const response = await server.get(`/hotels/${room.id}`).set('Authorization', `Bearer ${token}`);
+      const response = await server.get(`/hotels/${hotel.id}`).set('Authorization', `Bearer ${token}`);
 
       expect(response.status).toBe(httpStatus.PAYMENT_REQUIRED);
     });
@@ -261,9 +259,9 @@ describe('GET /hotels/:hotelId', () => {
       const ticketType = await createSpecificTicketType(false, false);
       await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
       const hotel = await createHotel();
-      const room = await createRoom(hotel.id);
+      await createRoom(hotel.id);
 
-      const response = await server.get(`/hotels/${room.id}`).set('Authorization', `Bearer ${token}`);
+      const response = await server.get(`/hotels/${hotel.id}`).set('Authorization', `Bearer ${token}`);
 
       expect(response.status).toBe(httpStatus.PAYMENT_REQUIRED);
     });
@@ -278,28 +276,26 @@ describe('GET /hotels/:hotelId', () => {
       const hotel = await createHotel();
       const room = await createRoom(hotel.id);
 
-      const response = await server.get(`/hotels/${room.id}`).set('Authorization', `Bearer ${token}`);
+      const response = await server.get(`/hotels/${hotel.id}`).set('Authorization', `Bearer ${token}`);
 
       expect(response.status).toBe(httpStatus.OK);
-      expect(response.body).toEqual([
-        {
-          id: hotel.id,
-          name: hotel.name,
-          image: hotel.image,
-          createdAt: hotel.createdAt.toISOString(),
-          updatedAt: hotel.updatedAt.toISOString(),
-          Rooms: [
-            {
-              id: room.id,
-              name: room.name,
-              capacity: room.capacity,
-              hotelId: room.hotelId,
-              createdAt: room.createdAt.toISOString(),
-              updatedAt: room.updatedAt.toISOString(),
-            },
-          ],
-        },
-      ]);
+      expect(response.body).toEqual({
+        id: hotel.id,
+        name: hotel.name,
+        image: hotel.image,
+        createdAt: hotel.createdAt.toISOString(),
+        updatedAt: hotel.updatedAt.toISOString(),
+        Rooms: [
+          {
+            id: room.id,
+            name: room.name,
+            capacity: room.capacity,
+            hotelId: room.hotelId,
+            createdAt: room.createdAt.toISOString(),
+            updatedAt: room.updatedAt.toISOString(),
+          },
+        ],
+      });
     });
   });
 });
