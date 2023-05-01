@@ -19,7 +19,14 @@ export async function getBooking(req: AuthenticatedRequest, res: Response) {
 
 export async function createBooking(req: AuthenticatedRequest, res: Response) {
   try {
-  } catch (error) {}
+    const response = await bookingService.createBookingForUser(req.body.roomId, req.userId);
+    return res.status(httpStatus.OK).send(response.id);
+  } catch (error) {
+    if (error.name === 'NotFoundError') {
+      return res.sendStatus(httpStatus.NOT_FOUND);
+    }
+    return res.sendStatus(httpStatus.FORBIDDEN);
+  }
 }
 
 export async function changeBooking(req: AuthenticatedRequest, res: Response) {
