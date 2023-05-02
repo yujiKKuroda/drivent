@@ -9,7 +9,7 @@ async function getBookingByUserId(userId: number) {
   return result;
 }
 
-async function createBookingForUser(roomId: number, userId: number): Promise<Booking> {
+async function createBookingForUser(roomId: number, userId: number) {
   const ticket: Ticket = await bookingRepository.findTicketByUserId(userId);
   if (ticket.status !== 'PAID') throw forbiddenError();
 
@@ -26,7 +26,7 @@ async function createBookingForUser(roomId: number, userId: number): Promise<Boo
   return booking;
 }
 
-async function changeBookingForUser(roomId: number, bookingId: number): Promise<Booking> {
+async function changeBookingForUser(roomId: number, bookingId: number) {
   const booking: Booking = await bookingRepository.findBookingById(bookingId);
   if (!booking) throw forbiddenError();
 
