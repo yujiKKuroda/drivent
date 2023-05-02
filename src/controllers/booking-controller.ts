@@ -22,7 +22,6 @@ export async function createBooking(req: AuthenticatedRequest, res: Response) {
 
   try {
     const booking = await bookingService.createBookingForUser(roomId, userId);
-    console.log(booking);
     return res.status(httpStatus.OK).send({ bookingId: booking.id });
   } catch (error) {
     if (error.name === 'NotFoundError') {
@@ -39,7 +38,7 @@ export async function changeBooking(req: AuthenticatedRequest, res: Response) {
 
   try {
     const booking = await bookingService.changeBookingForUser(roomId, bookingId);
-    return res.status(httpStatus.OK).send(String(booking.id));
+    return res.status(httpStatus.OK).send({ bookingId: booking.id });
   } catch (error) {
     if (error.name === 'NotFoundError') {
       return res.sendStatus(httpStatus.NOT_FOUND);

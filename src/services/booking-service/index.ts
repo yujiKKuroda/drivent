@@ -33,7 +33,7 @@ async function changeBookingForUser(roomId: number, bookingId: number) {
   const room: Room = await bookingRepository.findRoom(roomId);
   if (!room) throw notFoundError();
 
-  const bookingList: Booking[] = await bookingRepository.findAllRooms(roomId);
+  const bookingList = await bookingRepository.findAllRooms(roomId);
   if (bookingList.length >= room.capacity) throw forbiddenError();
 
   const bookingUpdated = await bookingRepository.changeBooking(roomId, bookingId);
