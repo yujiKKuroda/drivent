@@ -1,7 +1,7 @@
 import { Booking, Enrollment, Room, Ticket, TicketType } from '@prisma/client';
 import { prisma } from '@/config';
 
-async function changeBooking(roomId: number, bookingId: number): Promise<Booking> {
+async function changeBooking(roomId: number, bookingId: number) {
   return await prisma.booking.update({
     where: {
       id: bookingId,
@@ -12,7 +12,7 @@ async function changeBooking(roomId: number, bookingId: number): Promise<Booking
   });
 }
 
-async function createBooking(roomId: number, userId: number): Promise<Booking> {
+async function createBooking(roomId: number, userId: number) {
   return await prisma.booking.create({
     data: {
       userId: userId,
@@ -21,7 +21,7 @@ async function createBooking(roomId: number, userId: number): Promise<Booking> {
   });
 }
 
-async function findAllRooms(roomId: number): Promise<Booking[]> {
+async function findAllRooms(roomId: number) {
   return await prisma.booking.findMany({
     where: {
       roomId: roomId,

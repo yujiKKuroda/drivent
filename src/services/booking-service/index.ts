@@ -19,10 +19,10 @@ async function createBookingForUser(roomId: number, userId: number): Promise<Boo
   const room: Room = await bookingRepository.findRoom(roomId);
   if (!room) throw notFoundError();
 
-  const bookingList: Booking[] = await bookingRepository.findAllRooms(roomId);
+  const bookingList = await bookingRepository.findAllRooms(roomId);
   if (bookingList.length >= room.capacity) throw forbiddenError();
 
-  const booking: Booking = await bookingRepository.createBooking(roomId, userId);
+  const booking = await bookingRepository.createBooking(roomId, userId);
   return booking;
 }
 
@@ -36,7 +36,7 @@ async function changeBookingForUser(roomId: number, bookingId: number): Promise<
   const bookingList: Booking[] = await bookingRepository.findAllRooms(roomId);
   if (bookingList.length >= room.capacity) throw forbiddenError();
 
-  const bookingUpdated: Booking = await bookingRepository.changeBooking(roomId, bookingId);
+  const bookingUpdated = await bookingRepository.changeBooking(roomId, bookingId);
   return bookingUpdated;
 }
 
