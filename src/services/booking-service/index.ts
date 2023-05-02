@@ -4,7 +4,6 @@ import bookingRepository from '@/repositories/booking-repository';
 
 async function getBookingByUserId(userId: number) {
   const result = await bookingRepository.getBookingByUserId(userId);
-
   if (!result) throw notFoundError();
 
   return result;
@@ -20,8 +19,8 @@ async function createBookingForUser(roomId: number, userId: number): Promise<Boo
   const room: Room = await bookingRepository.findRoom(roomId);
   if (!room) throw notFoundError();
 
-  const roomBookingList: Booking[] = await bookingRepository.findAllRooms(roomId);
-  if (roomBookingList.length <= room.capacity) throw forbiddenError();
+  const bookingList: Booking[] = await bookingRepository.findAllRooms(roomId);
+  if (bookingList.length >= room.capacity) throw forbiddenError();
 
   return await bookingRepository.createBooking(roomId, userId);
 }
@@ -33,8 +32,8 @@ async function changeBookingForUser(roomId: number, bookingId: number): Promise<
   const room: Room = await bookingRepository.findRoom(roomId);
   if (!room) throw notFoundError();
 
-  const roomBookingList: Booking[] = await bookingRepository.findAllRooms(roomId);
-  if (roomBookingList.length >= room.capacity) throw forbiddenError();
+  const bookingList: Booking[] = await bookingRepository.findAllRooms(roomId);
+  if (bookingList.length >= room.capacity) throw forbiddenError();
 
   return await bookingRepository.changeBooking(roomId, bookingId);
 }
